@@ -1,14 +1,17 @@
 class Configuration:
+    type = "orientation"
+    raw = "ned"
     window_size = 10
     window_step = 10
-    remove_seconds = 10
+    remove_seconds = 0
+    use_diff = False
     features = []
     chanels = []
     sensors = []
 
     def __init__(self,
                  type="orientation",
-                 raw='ned',
+                 raw="ned",
                  window_size=10,
                  window_step=10,
                  remove_seconds=0,
