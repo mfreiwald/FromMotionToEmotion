@@ -33,6 +33,8 @@ class PCASelection():
         self.scale = scale
 
     def execute(self, df):
+        logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
         columns = ['PC_%03d'%i for i in range(1,self.number+1)]
         x = df.loc[:, :].values
         if self.scale:

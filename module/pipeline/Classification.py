@@ -1,6 +1,7 @@
 from collections import defaultdict
 import pandas as pd
 import numpy as np
+import logging
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.svm import SVC
@@ -20,11 +21,10 @@ def _video_of(name, nrs):
 
 classifiers = {
     "RandomForest": RandomForestClassifier(
-        n_estimators=100,
-        n_jobs=-1),
+        n_estimators=100),
     "AdaBoost": AdaBoostClassifier(
         n_estimators=100),
-    "SVC": SVC(),
+    "SVC": SVC(gamma='auto'),
     "MostFrequent": DummyClassifier(strategy="most_frequent"),
     "Random": DummyClassifier(strategy="uniform"),
 }
@@ -43,6 +43,8 @@ videoCombis = [
 ]
 
 def run_clf(clf, train_x, train_y, test_x, test_y, state):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     clf.random_state = state
     model = clf.fit(train_x, train_y)
     test_yp = model.predict(test_x)
@@ -85,6 +87,8 @@ def run_clf(clf, train_x, train_y, test_x, test_y, state):
     return score, cm, info, importances, probas_df
 
 def run_class(data, splits):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     cv_scores = {}
 
     participants = np.array(sorted(set(map(lambda i: i.split("_")[0], data.index))))
@@ -179,7 +183,8 @@ def run_class(data, splits):
 class Classification():
 
     def __init__(self):
-        pass
+        logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
 
     def execute(self, data):
         print("Make Classification with ", labelConfig)

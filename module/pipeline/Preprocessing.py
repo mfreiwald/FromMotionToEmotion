@@ -1,11 +1,15 @@
 import os
 import pandas as pd
 import math
+from pyquaternion import Quaternion
+import logging
 
 RAW_DIR = "./data/raw"
 
 
 def process_orientation(dir, file, processes, use_diff):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     participant = file.split("_")[0]
     video = file.split("_")[1]
 
@@ -18,7 +22,6 @@ def process_orientation(dir, file, processes, use_diff):
 
     for process in processes:
         df = process.process(df, participant, video)
-
 
     # rename columns
     df.columns = list(map(lambda c: c.split("_")[0]+"_"+c.split("_")[3] if c != "time" else c , df.columns))
@@ -49,7 +52,6 @@ class Preprocessing():
         use_diff = [self.use_diff for i in range(len(files))]
 
         #names = [self.name for i in range(len(files))]
-
 
         if self.type == "orientation":
             if self.client is None:
@@ -106,9 +108,8 @@ class LowPassFilter(PreprocessingStep):
         self.hrange = hrange
         self.hbias = hbias
 
-
     def process(self, df, participant=None, video=None):
-        print("Process LowPassFilter")
+        print("Process LowPassFilter", participant, video)
         df = df.sort_values(by="time")
 
         ## get all sensors
@@ -161,7 +162,7 @@ class SlidingWindow(PreprocessingStep):
 
 
     def process(self, df, participant=None, video=None):
-        print("Process SlidingWindow")
+        print("Process SlidingWindow", participant, video)
 
         maxTime = df.time.max()
         newdf = None
@@ -185,7 +186,7 @@ class RemoveFirstWindows(PreprocessingStep):
         self.seconds = seconds
 
     def process(self, df, participant=None, video=None):
-        print("Process RemoveFirstWindows")
+        print("Process RemoveFirstWindows", participant, video)
         return df.groupby(level=0).filter(lambda g: g.time.min() > (self.seconds*1000))
 
     def config(self):

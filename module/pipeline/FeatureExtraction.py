@@ -4,9 +4,12 @@ from tsfresh.utilities.distribution import MapDistributor
 import pandas as pd
 import numpy as np
 import skinematics as skin
+import logging
 
 
 def ts_extract(df, features):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     # participant = file.split("_")[0]
     # video = file.split("_")[1]
     dd = df.copy()
@@ -17,6 +20,8 @@ def ts_extract(df, features):
 
 
 def abs_integral(df):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     grouped = df.groupby(by="id")
     rows = []
     cols = None
@@ -36,6 +41,8 @@ def abs_integral(df):
 
 
 def velocity(df):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     grouped = df.groupby(by="id")
     rows = []
     cols = None
@@ -54,6 +61,8 @@ def velocity(df):
 
 
 def rotation_velocity(df):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     grouped = df.groupby(by="id")
     rows = []
     cols = None
@@ -87,6 +96,8 @@ def rotation_velocity(df):
 
 
 def combine_feature(df):
+    logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
+
     # combine Sensor_%s_Feature together to Sensor_q_Feature
     # need a list of Sensors and a list of Features from df.columns
     sensors = set(map(lambda c: c.split("_")[0], df.columns))
@@ -114,6 +125,8 @@ class FeatureEngineering():
         self.configFeatures = configFeatures
         self.calc_integral = calc_integral
         self.combine = combine
+
+        logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
 
     def execute(self, preprocessed_dfs):
         finaldf = self.read_input(preprocessed_dfs)
