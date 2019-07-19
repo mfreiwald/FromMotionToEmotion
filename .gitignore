@@ -3,3 +3,7 @@ env
 data/raw
 dask-worker-space
 raw.zip
+global.lock
+purge.lock
+slurm-*
+worker-*
