@@ -1,5 +1,6 @@
 from module.Configuration import Configuration
 from module.Evaluation import Evaluation
+# from module.Cluster import Cluster
 from dask.distributed import Client
 import logging
 
@@ -9,6 +10,11 @@ def main():
     print(conf)
 
     c = Client()
+
+    # On a SLURM Network, you can call:
+    # c = Cluster().cli
+    # Check module/Cluster.py for more details
+
     eva = Evaluation(c, conf)
 
     logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
