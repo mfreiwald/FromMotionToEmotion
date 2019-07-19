@@ -12,7 +12,8 @@ def main():
     c = Client()
 
     # On a SLURM Network, you can call:
-    # c = Cluster().cli
+    # clu = Cluster()
+    # c = clu.cli
     # Check module/Cluster.py for more details
 
     eva = Evaluation(c, conf)
@@ -24,6 +25,7 @@ def main():
     df3 = eva.make_selection(df2)
     results_clf_score, sizes, info_df, importances_df, all_probas = eva.make_classification(df3)
 
+    # clu.close()
 
 if __name__ == "__main__":
     main()
