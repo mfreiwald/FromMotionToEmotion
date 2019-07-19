@@ -120,10 +120,9 @@ def combine_feature(df):
 
 class FeatureEngineering():
 
-    def __init__(self, ts_features, configFeatures, calc_integral=True, combine=True):
+    def __init__(self, ts_features, configFeatures, combine=True):
         self.ts_features = ts_features
         self.configFeatures = configFeatures
-        self.calc_integral = calc_integral
         self.combine = combine
 
         logging.getLogger('distributed.utils_perf').setLevel(logging.CRITICAL)
@@ -131,39 +130,17 @@ class FeatureEngineering():
     def execute(self, preprocessed_dfs):
         finaldf = self.read_input(preprocessed_dfs)
 
-        #finaldf = None
-       #
-       # df1 = pd.concat(ts_dfs)
-       # if absi_dfs is not None:
-       #     df2 = pd.concat(absi_dfs)
-       #     finaldf = pd.concat([df1, df2], axis=1)
-       # else:
-       #     finaldf = df1
-
         if self.combine:
             finaldf = combine_feature(finaldf)
-
-        #print(finaldf)
 
         finaldf = finaldf.sort_index()
         finaldf = finaldf.reindex(sorted(finaldf.columns), axis=1)
         return finaldf
 
-
     def read_input(self, preprocessed_dfs):
         tsfs = [self.ts_features for i in range(len(preprocessed_dfs))]
 
-
         dfs_return = []
-
-
-        # future = client.submit(func, big_data)    # bad
-        #
-        # big_future = client.scatter(big_data)     # good
-        # future = client.submit(func, big_future)  # good
-
-        #futures = self.client.map(ts_extract, preprocessed_dfs, tsfs)
-        #results = self.client.gather(futures)
         big_futures = self.client.scatter(preprocessed_dfs)
         futures = self.client.map(ts_extract, big_futures, tsfs)
         results = self.client.gather(futures)
@@ -182,17 +159,11 @@ class FeatureEngineering():
             df_rot = pd.concat(results, sort=True)
             dfs_return.append(df_rot)
 
-
-        if self.calc_integral:
-            #big_futures2 = self.client.scatter(preprocessed_dfs)
+        if "abs_integral" in self.configFeatures:
             futures2 = self.client.map(abs_integral, big_futures)
             results2 = self.client.gather(futures2)
             df_int = pd.concat(results2)
             dfs_return.append(df_int)
-
-
-        #results = [ts_extract(preprocessed_dfs[0], tsfs[0])]
-        #results2 = [abs_integral(preprocessed_dfs[0])]
 
         return pd.concat(dfs_return, axis=1)
 
