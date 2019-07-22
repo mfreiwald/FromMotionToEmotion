@@ -1,4 +1,4 @@
-from module.pipeline.Configuration import Configuration
+from module.Configuration import Configuration
 from dask.distributed import Client
 import logging
 from sklearn.preprocessing import StandardScaler
